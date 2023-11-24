@@ -1,10 +1,10 @@
 import click
 
 
-from obt.core.config import Config
+# from obt.core.config import Config
 from obt.core.tools import backup_database
 
-settings = Config()
+# settings = Config()
 
 
 @click.group()
