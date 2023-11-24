@@ -1,90 +1,92 @@
-#!/bin/python3
-
 import ast
 import logging
 import os
+from datetime import datetime
 from collections import namedtuple
-
+from google.oauth2 import service_account
+from google.cloud import storage
+import json
+import sys
+from subprocess import call
 
 _logger = logging.getLogger(__name__)
 
-File = namedtuple("File", ["name", "path", "content"])
-TEMPLATE_DIR = os.path.abspath("static/")
+
+def get_storage(json_account_info):
+    credentials = service_account.Credentials.from_service_account_info(
+        json_account_info
+    )
+    return storage.Client(credentials=credentials)
 
 
-def generate_file(filename: str, content: str) -> File:
-    filepath = f"{filename}.py"
-
-    return File(name=filename, path=filepath, content=content)
+def get_bucket(storage_client, name):
+    return storage_client.bucket(name)
 
 
-def get_assign(src):
-    def function(obj):
-        for child in obj.body:
-            if isinstance(child, ast.ClassDef):
-                return function(child)
-            if isinstance(child, ast.Assign):
-                return child
+def upload_blob(
+    bucket_name, source_file_name, destination_blob_name, json_account_info
+):
+    """Uploads a file to the bucket."""
+    # The ID of your GCS bucket
+    # bucket_name = "your-bucket-name"
+    # The path to your file to upload
+    # source_file_name = "local/path/to/file"
+    # The ID of your GCS object
+    # destination_blob_name = "storage-object-name"
 
-    # src = format_str(src, mode=FileMode())
-    src = src.strip('"')
-    # print(src)
-    obj = ast.parse(src)
-    return function(obj)
+    storage_client = get_storage(json_account_info)
+    bucket = get_bucket(storage_client, bucket_name)
 
+    # storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
 
-def dict_to_list(data, keys=None):
-    def function(item):
-        return f'{item}="{data[item]}"'
+    # Optional: set a generation-match precondition to avoid potential race conditions
+    # and data corruptions. The request to upload is aborted if the object's
+    # generation number does not match your precondition. For a destination
+    # object that does not yet exist, set the if_generation_match precondition to 0.
+    # If the destination object already exists in your bucket, set instead a
+    # generation-match precondition using its generation number.
+    generation_match_precondition = 0
 
-    if keys:
-        items = filter(lambda x: x in keys, data)
-    else:
-        items = data
+    blob.upload_from_filename(
+        source_file_name, if_generation_match=generation_match_precondition
+    )
 
-    return list(map(function, items))
-
-
-def get_keyword(obj):
-    name = obj.arg
-    value = obj.value
-
-    if isinstance(value, ast.Constant):
-        value = value.value
-
-    return (name, value)
+    _logger.info("File %s uploaded to %s.", source_file_name, destination_blob_name)
 
 
-def get_arg(obj):
-    value = obj
+def backup_database(dbname, **kwargs):
+    filestore = kwargs.get("filestore", True)
+    ttype = kwargs.get("ttype", "zip")
+    prefix = kwargs.pop("prefix", False)
+    args = ["click-odoo-backupdb"]
 
-    if isinstance(value, ast.Constant):
-        value = value.value
-    elif isinstance(value, ast.List):
-        result = []
+    if not filestore:
+        args.append("--no-filestore")
 
-        for child in value.elts:
-            res = []
-            if isinstance(child, ast.Tuple):
-                for cc in child.elts:
-                    if isinstance(cc, ast.Constant):
-                        res.append(cc.value)
-                        continue
-                    if isinstance(cc, ast.Call):
-                        tmp = f"{cc.func.id}({cc.args[0].value})"
-                        res.append(tmp)
-                        continue
-            result.append(res)
-        # print(result)
-        value = ast.dump(value)
+    if ttype:
+        args += ["--format", ttype]
 
-        # value = ast.literal_eval(value)
+    args.append(dbname)
 
-        # print(value)
-        # exit(1)
-    # else:
-    #     print(type(obj))
-    #     exit(1)
+    output_name = get_name(dbname, ttype, prefix)
+    args.append(output_name)
 
-    # return f'"{value}"'
-    return value
+    _logger.error(args)
+
+    call(args)
+
+
+def get_name(dbname, ttype, prefix=None):
+    now = datetime.now()
+    string_date = now.strftime("%Y-%m-%d_%H%M")
+
+    res = f"{prefix or dbname}_{dbname}_{string_date}"
+
+    if ttype == "zip":
+        res += ".zip"
+    elif ttype == "dump":
+        res += ".dump"
+
+    return res

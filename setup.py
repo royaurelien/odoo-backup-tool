@@ -12,9 +12,8 @@ setup(
     include_package_data=True,
     install_requires=[
         "click",
-        "odoo_analyse",
-        "black",
-        "jinja2",
+        "click-odoo-contrib",
+        "google",
     ],
     # extras_require={"graph": ["graphviz", "psycopg2"]},
     entry_points={
