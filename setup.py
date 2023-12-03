@@ -1,8 +1,8 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="obt",
-    version="0.0.2",
+    name="odoo-backup-tool",
+    version="0.0.1",
     description="Odoo Backup Tool",
     url="https://github.com/royaurelien/odoo-backup-tool",
     author="Aurelien ROY",
@@ -15,7 +15,6 @@ setup(
         "click-odoo-contrib",
         "google",
     ],
-    # extras_require={"graph": ["graphviz", "psycopg2"]},
     entry_points={
         "console_scripts": [
             "obt = obt.cli.main:cli",

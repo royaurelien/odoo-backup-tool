@@ -1,15 +1,16 @@
 import click
 
 
-# from obt.core.config import Config
-from obt.core.tools import backup_database
+from obt.core.settings import get_settings
 
-# settings = Config()
+settings = get_settings()  # pylint: disable=C0413
+
+from obt.core.tools import backup_database
 
 
 @click.group()
 def cli():
-    """Odoo Module Generator"""
+    """Odoo Backup Tool"""
 
 
 @click.command()
