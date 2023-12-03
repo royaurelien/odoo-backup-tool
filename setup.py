@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="odoo-backup-tool",
-    version="0.0.1",
+    version="0.0.2",
     description="Odoo Backup Tool",
     url="https://github.com/royaurelien/odoo-backup-tool",
     author="Aurelien ROY",
