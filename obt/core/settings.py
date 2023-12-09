@@ -31,6 +31,7 @@ class Settings(BaseSettings):
 
     @property
     def json_auth(self):
+        # return eval(self.env_json_auth) if self.env_json_auth else {}
         return json.loads(self.env_json_auth) if self.env_json_auth else {}
 
 

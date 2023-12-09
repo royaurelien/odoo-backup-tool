@@ -35,6 +35,8 @@ def upload_blob(
     # The ID of your GCS object
     # destination_blob_name = "storage-object-name"
 
+    _logger.error(json_account_info)
+
     storage_client = get_storage(json_account_info)
     bucket = get_bucket(storage_client, bucket_name)
 
@@ -77,6 +79,9 @@ def backup_database(dbname, **kwargs):
 
     filename = get_name(dbname, ttype, prefix)
     filepath = os.path.join(path, filename)
+
+    if os.path.exists(filepath):
+        os.remove(filepath)
 
     args.append(filepath)
 

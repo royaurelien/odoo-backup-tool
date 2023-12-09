@@ -81,6 +81,20 @@ def backup(dbname, no_filestore, **kwargs):
     type=bool,
     help="Do not delete files after backup.",
 )
+@click.option(
+    "--auth",
+    "-a",
+    required=False,
+    type=str,
+    help="Use prefix",
+)
+@click.option(
+    "--bucket",
+    "-b",
+    required=False,
+    type=str,
+    help="Use prefix",
+)
 def backup_and_push(dbname, no_filestore, **kwargs):
     options = {
         "filestore": not no_filestore,
@@ -88,6 +102,12 @@ def backup_and_push(dbname, no_filestore, **kwargs):
         "prefix": kwargs.get("prefix", False),
     }
     delete = True if not kwargs.get("keep", False) else True
+    bucket = kwargs.get("bucket", False)
+    auth = kwargs.get("auth", False)
+
+    if auth:
+        auth = eval(auth)
+        print(auth)
 
     res, filename, filepath = backup_database(
         dbname or settings.default_database, **options
@@ -96,10 +116,10 @@ def backup_and_push(dbname, no_filestore, **kwargs):
         sys.exit(1)
 
     upload_blob(
-        settings.bucket_name,
+        bucket or settings.bucket_name,
         filepath,
         filename,
-        settings.json_auth,
+        auth or settings.json_auth,
     )
 
     if delete:
