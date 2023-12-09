@@ -21,6 +21,10 @@ pip install odoo-backup-tool
 
 ### Backup local database
 ```bash
-obt backup
+obt backup DBNAME
 ```
 
+### Backup and upload
+```bash
+obt backup-and-push --format zip [DBNAME]
+```

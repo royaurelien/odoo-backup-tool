@@ -7,6 +7,7 @@ from google.oauth2 import service_account
 from google.cloud import storage
 import json
 import sys
+import subprocess
 from subprocess import call
 
 _logger = logging.getLogger(__name__)
@@ -53,13 +54,17 @@ def upload_blob(
         source_file_name, if_generation_match=generation_match_precondition
     )
 
-    _logger.info("File %s uploaded to %s.", source_file_name, destination_blob_name)
+    _logger.warning("File %s uploaded to %s.", source_file_name, destination_blob_name)
 
 
 def backup_database(dbname, **kwargs):
+    if not dbname:
+        raise ValueError("Database name is mandatory.")
+
     filestore = kwargs.get("filestore", True)
     ttype = kwargs.get("ttype", "zip")
     prefix = kwargs.pop("prefix", False)
+    path = kwargs.pop("path", "/tmp")
     args = ["click-odoo-backupdb"]
 
     if not filestore:
@@ -70,19 +75,31 @@ def backup_database(dbname, **kwargs):
 
     args.append(dbname)
 
-    output_name = get_name(dbname, ttype, prefix)
-    args.append(output_name)
+    filename = get_name(dbname, ttype, prefix)
+    filepath = os.path.join(path, filename)
 
-    _logger.error(args)
+    args.append(filepath)
 
-    call(args)
+    _logger.debug(args)
+
+    try:
+        subprocess.run(args)
+        res = True
+    except Exception as error:
+        res = False
+        _logger.error(error)
+
+    return res, filename, filepath
 
 
-def get_name(dbname, ttype, prefix=None):
+def get_name(dbname, ttype, prefix=None, suffix=None):
     now = datetime.now()
     string_date = now.strftime("%Y-%m-%d_%H%M")
 
-    res = f"{prefix or dbname}_{dbname}_{string_date}"
+    if not suffix:
+        suffix = "obt"
+
+    res = f"{prefix or dbname}_{dbname}_{string_date}_{suffix}"
 
     if ttype == "zip":
         res += ".zip"
@@ -90,3 +107,8 @@ def get_name(dbname, ttype, prefix=None):
         res += ".dump"
 
     return res
+
+
+def clean_files(filepath):
+    if os.path.exists(filepath):
+        os.remove(filepath)
