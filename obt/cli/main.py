@@ -17,7 +17,11 @@ def cli():
 @click.command()
 @click.argument("dbname")
 @click.option(
-    "--format", "-f", required=True, type=str, help="Format: zip, dump, folder"
+    "--format",
+    "-f",
+    required=True,
+    type=str,
+    help="Format: zip, dump, folder.",
 )
 @click.option(
     "--no-filestore",
@@ -49,14 +53,14 @@ def backup(dbname, no_filestore, **kwargs):
     required=False,
     default=None,
     type=str,
-    help="Database name",
+    help="Database name.",
 )
 @click.option(
     "--format",
     "-f",
     required=True,
     type=str,
-    help="Format: zip, dump, folder",
+    help="Format: zip, dump, folder.",
 )
 @click.option(
     "--no-filestore",
@@ -71,7 +75,7 @@ def backup(dbname, no_filestore, **kwargs):
     "-p",
     required=False,
     type=str,
-    help="Use prefix",
+    help="Use prefix in filename.",
 )
 @click.option(
     "--keep",
@@ -86,14 +90,14 @@ def backup(dbname, no_filestore, **kwargs):
     "-a",
     required=False,
     type=str,
-    help="Use prefix",
+    help="Bucket authentication.",
 )
 @click.option(
     "--bucket",
     "-b",
     required=False,
     type=str,
-    help="Use prefix",
+    help="Bucket name.",
 )
 def backup_and_push(dbname, no_filestore, **kwargs):
     options = {
@@ -107,7 +111,6 @@ def backup_and_push(dbname, no_filestore, **kwargs):
 
     if auth:
         auth = eval(auth)
-        print(auth)
 
     res, filename, filepath = backup_database(
         dbname or settings.default_database, **options

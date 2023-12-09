@@ -26,5 +26,17 @@ obt backup DBNAME
 
 ### Backup and upload
 ```bash
-obt backup-and-push --format zip [DBNAME]
+obt backup-and-push --format <format>
+```
+
+```bash
+Options:
+  -d, --dbname TEXT   Database name
+  -f, --format TEXT   Format: zip, dump, folder  [required]
+  -n, --no-filestore  Do not include filestore.
+  -p, --prefix TEXT   Use prefix in filename.
+  -k, --keep          Do not delete files after backup.
+  -a, --auth TEXT     Bucket authentication.
+  -b, --bucket TEXT   Bucket name.
+  --help              Show this message and exit.
 ```
