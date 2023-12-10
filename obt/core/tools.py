@@ -1,14 +1,10 @@
-import ast
 import logging
 import os
-from datetime import datetime
-from collections import namedtuple
-from google.oauth2 import service_account
-from google.cloud import storage
-import json
-import sys
 import subprocess
-from subprocess import call
+from datetime import datetime
+
+from google.cloud import storage
+from google.oauth2 import service_account
 
 _logger = logging.getLogger(__name__)
 

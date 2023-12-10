@@ -1,12 +1,12 @@
-import click
 import sys
-import os
+
+import click
 
 from obt.core.settings import get_settings
 
 settings = get_settings()  # pylint: disable=C0413
 
-from obt.core.tools import backup_database, upload_blob, clean_files
+from obt.core.tools import backup_database, clean_files, upload_blob  # noqa: E402
 
 
 @click.group()

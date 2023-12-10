@@ -1,10 +1,9 @@
+import json
 import os
 from functools import lru_cache
-import json
 
 # from pydantic import ValidationError
 from pydantic_settings import BaseSettings
-
 
 # from obt.core.tools import ROOT_DIR
 
@@ -27,7 +26,6 @@ class Settings(BaseSettings):
 
     def save(self, clear=False):
         """Save settings to JSON file"""
-        pass
 
     @property
     def json_auth(self):
