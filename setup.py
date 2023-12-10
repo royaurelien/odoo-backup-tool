@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="odoo-backup-tool",
-    version="0.0.7",
+    version="0.0.8",
     description="Odoo Backup Tool",
     long_description=open("README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
