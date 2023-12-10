@@ -72,8 +72,9 @@ def backup_database(dbname, **kwargs):
         args += ["--format", ttype]
 
     args.append(dbname)
+    suffix = "obt_no_fs" if not filestore else "obt"
 
-    filename = get_name(dbname, ttype, prefix)
+    filename = get_name(dbname, ttype, prefix, suffix)
     filepath = os.path.join(path, filename)
 
     if os.path.exists(filepath):
