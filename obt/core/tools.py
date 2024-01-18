@@ -60,6 +60,7 @@ def backup_database(dbname, **kwargs):
     filestore = kwargs.get("filestore", True)
     ttype = kwargs.get("ttype", "zip")
     prefix = kwargs.pop("prefix", False)
+    suffix = kwargs.pop("suffix", False)
     path = kwargs.pop("path", "/tmp")
     args = ["click-odoo-backupdb"]
 
@@ -70,7 +71,12 @@ def backup_database(dbname, **kwargs):
         args += ["--format", ttype]
 
     args.append(dbname)
-    suffix = "obt_no_fs" if not filestore else "obt"
+
+    if not suffix:
+        suffix = "obt"
+
+    if not filestore:
+        suffix += "_no_fs"
 
     filename = get_name(dbname, ttype, prefix, suffix)
     filepath = os.path.join(path, filename)

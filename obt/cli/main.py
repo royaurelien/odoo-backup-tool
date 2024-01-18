@@ -78,6 +78,13 @@ def backup(dbname, no_filestore, **kwargs):
     help="Use prefix in filename.",
 )
 @click.option(
+    "--suffix",
+    "-s",
+    required=False,
+    type=str,
+    help="Use suffix in filename.",
+)
+@click.option(
     "--keep",
     "-k",
     is_flag=True,
@@ -104,6 +111,7 @@ def backup_and_push(dbname, no_filestore, **kwargs):
         "filestore": not no_filestore,
         "ttype": kwargs.get("format"),
         "prefix": kwargs.get("prefix", False),
+        "suffix": kwargs.get("suffix", False),
     }
     delete = True if not kwargs.get("keep", False) else True
     bucket = kwargs.get("bucket", False)
