@@ -31,8 +31,6 @@ def upload_blob(
     # The ID of your GCS object
     # destination_blob_name = "storage-object-name"
 
-    _logger.error(json_account_info)
-
     storage_client = get_storage(json_account_info)
     bucket = get_bucket(storage_client, bucket_name)
 
@@ -81,8 +79,6 @@ def backup_database(dbname, **kwargs):
         os.remove(filepath)
 
     args.append(filepath)
-
-    _logger.debug(args)
 
     try:
         subprocess.run(args)
